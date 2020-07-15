@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+
+  jira:
+    container_name: jira
+    image: atlassian/jira-software:latest
+    ports:
+      - 127.0.0.1:8080:8080
+    volumes:
+      - ./data/jira:/var/atlassian/application-data/jira
+    env_file: env.atlassian
+    environment:
+     - ATL_PROXY_NAME=jira.outatime.xyz
+    depends_on:
+      - postgres
+
+  confluence:
+    container_name: confluence
+    image: atlassian/confluence-server:latest
+    ports:
+      - 127.0.0.1:8090:8090
+    volumes:
+      - ./data/conf:/var/atlassian/application-data/confluence 
+    env_file: env.atlassian
+    environment:
+     - ATL_PROXY_NAME=wiki.outatime.xyz
+    depends_on:
+      - postgres
+
+ postgres:
+    container_name: postgresql
+    image: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./etc/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - 5432
+    env_file: env.postgres
+
